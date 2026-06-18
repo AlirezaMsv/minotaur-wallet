@@ -33,6 +33,7 @@ const SignTx = (props: SignTxPropsType) => {
   useEffect(() => {
     if (generatorContext.error) {
       props.setHasError(true);
+      console.error('Transaction generation error:', generatorContext.error);
     }
   }, [props, generatorContext.error]);
 
@@ -40,6 +41,10 @@ const SignTx = (props: SignTxPropsType) => {
     const matched = TransactionErrorTypes.find((type) =>
       type.detect(generatorContext.error),
     );
+    const errorSummary = matched
+      ? matched.render(generatorContext.error)
+      : 'Unknown transaction error';
+
     return (
       <Box
         sx={{
@@ -52,10 +57,27 @@ const SignTx = (props: SignTxPropsType) => {
         <StateMessage
           color="error"
           title="Transaction Error"
-          description={
-            matched
-              ? matched.render(generatorContext.error)
-              : `Unknown Error: ${generatorContext.error}`
+          description={errorSummary}
+          action={
+            <Typography
+              component="pre"
+              variant="caption"
+              color="textSecondary"
+              sx={{
+                mx: 'auto',
+                p: 1.5,
+                maxWidth: '100%',
+                overflowX: 'auto',
+                bgcolor: 'action.hover',
+                borderRadius: 1,
+                fontFamily: 'monospace',
+                textAlign: 'left',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+              }}
+            >
+              {generatorContext.error}
+            </Typography>
           }
         />
       </Box>
